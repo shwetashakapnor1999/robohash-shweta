@@ -15,27 +15,60 @@ function randomString(length) {
 
   return result;
 }
-//Promises
+
+//async-await
 function writeFilePromise(fileLocation, result) {
   return new Promise((resolve, reject) => {
     fs.writeFile(fileLocation, result, (err) => {
       if (err) {
-        reject("not able to write to the file");
+        reject("Not able to write to the file");
       }
       resolve();
     });
   });
 }
-superagent.get(`https://robohash.org/${randomString(6)}`).end((err, res) => {
-  console.log(res.request.url);
-  return writeFilePromise("./randomImage.txt", res.request.url)
-    .then(() => {
-      console.log("Sucessfully written the file");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+async function getRandomPic() {
+  try {
+    const res = await superagent.get(`https://robohash.org/${randomString(6)}`);
+    console.log("Random image is ", res.request.url);
+    await writeFilePromise("./randomImage.txt", res.request.url);
+    console.log("Sucessfully written the file");
+  } catch (err) {
+    throw err;
+  }
+  console.log("2. Complete");
+}
+console.log("1. start");
+(async () => {
+  try {
+    await getRandomPic();
+    console.log("3. End");
+  } catch (err) {
+    console.log("3. End due to error");
+  }
+})();
+
+//Promises
+// function writeFilePromise(fileLocation, result) {
+//   return new Promise((resolve, reject) => {
+//     fs.writeFile(fileLocation, result, (err) => {
+//       if (err) {
+//         reject("not able to write to the file");
+//       }
+//       resolve();
+//     });
+//   });
+// }
+// superagent.get(`https://robohash.org/${randomString(6)}`).end((err, res) => {
+//   console.log(res.request.url);
+//   return writeFilePromise("./randomImage.txt", res.request.url)
+//     .then(() => {
+//       console.log("Sucessfully written the file");
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 // Callbacks
 // superagent.get(`https://robohash.org/${randomString(6)}`).end((err, res) => {
